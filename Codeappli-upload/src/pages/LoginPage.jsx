@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '../contexts/AuthContext';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Mail, Lock } from 'lucide-react';
 
 export default function LoginPage() {
@@ -43,13 +43,13 @@ export default function LoginPage() {
         >
           <Card className="shadow-xl border-0">
             <CardHeader className="text-center space-y-4">
-		  	  <div className="flex justify-center">
-  			    <img 
-    	  		  src="/logo-souveniirs.png" 
-    	  		  alt="Souveniirs Autobiographies"
-    	  		  className="h-16 w-auto"
-		  		/>
-		  	  </div>
+              <div className="flex justify-center">
+                <img 
+                  src="/logo-souveniirs.png" 
+                  alt="Souveniirs Autobiographies"
+                  className="h-16 w-auto"
+                />
+              </div>
               <CardTitle className="text-2xl font-bold text-gray-900">
                 Souveniirs Formation
               </CardTitle>
@@ -104,8 +104,6 @@ export default function LoginPage() {
                   {isLoading ? 'Connexion...' : 'Se connecter'}
                 </Button>
               </form>
-              
-              
             </CardContent>
           </Card>
         </motion.div>
