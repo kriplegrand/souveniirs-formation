@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import LoginPage from '@/pages/LoginPage';
-import LessonsPage from '@/pages/LessonsPage';
-import ChaptersPage from '@/pages/ChaptersPage';
-import CoachDashboard from '@/pages/CoachDashboard';
-import StudentDetails from '@/pages/StudentDetails';
-import AdminContentPage from '@/pages/AdminContentPage';
-import FirstLoginPage from '@/pages/FirstLoginPage';
-import AccessExpiredPage from '@/pages/AccessExpiredPage';
-import AdminUsersPage from '@/pages/AdminUsersPage';
-import ProfilePage from '@/pages/ProfilePage';
-import AnalyticsPage from '@/pages/AnalyticsPage';
+import { Toaster } from './components/ui/toaster';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import LoginPage from './pages/LoginPage';
+import LessonsPage from './pages/LessonsPage';
+import ChaptersPage from './pages/ChaptersPage';
+import CoachDashboard from './pages/CoachDashboard';
+import StudentDetails from './pages/StudentDetails';
+import AdminContentPage from './pages/AdminContentPage';
+import FirstLoginPage from './pages/FirstLoginPage';
+import AccessExpiredPage from './pages/AccessExpiredPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import ProfilePage from './pages/ProfilePage';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 function ProtectedRoute({ children, requiredRole = null }) {
   const { user, isLoading } = useAuth();
