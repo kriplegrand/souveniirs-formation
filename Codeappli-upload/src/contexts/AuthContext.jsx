@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { initialUsers, initialModules } from '@/lib/data.js';
-import { toast } from '@/components/ui/use-toast';
+import { initialUsers, initialModules } from '../lib/data.js';
 import { differenceInDays, isPast, parseISO } from 'date-fns';
-import { sendEmail } from '@/lib/email';
+import { sendEmail } from '../lib/email.js';
+
+// Note: Le toast est temporairement commenté car nous n'avons pas encore de système de toast
+// import { toast } from '../components/ui/use-toast';
 
 export const AuthContext = createContext();
 
@@ -11,6 +13,12 @@ export function AuthProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [modules, setModules] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fonction toast temporaire en attendant l'implémentation du système de toast
+  const toast = (options) => {
+    console.log('Toast:', options.title, '-', options.description);
+    // Ici vous pourrez plus tard implémenter un vrai système de notifications
+  };
 
   const checkExpirations = useCallback((currentUsers) => {
     let usersUpdated = false;
