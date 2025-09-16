@@ -1,21 +1,211 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import Navigation from '@/components/Navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '../contexts/AuthContext.js';
 import { Plus, Edit, Trash2, GripVertical, Link as LinkIcon, AlertTriangle } from 'lucide-react';
-import ReactQuill from 'react-quill';
+
+// Fonction toast temporaire
+const toast = (options) => {
+    console.log('Toast:', options.title, '-', options.description);
+};
+
+// Composants UI simplifiés pour le déploiement
+const Button = ({ children, onClick, variant = 'default', size = 'default', disabled = false, className = '', type = 'button' }) => {
+    const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+    const variants = {
+        default: 'bg-blue-600 text-white hover:bg-blue-700',
+        ghost: 'hover:bg-gray-100 hover:text-gray-900',
+        outline: 'border border-gray-300 bg-white hover:bg-gray-50',
+        destructive: 'bg-red-600 text-white hover:bg-red-700'
+    };
+    const sizes = {
+        default: 'h-10 py-2 px-4',
+        icon: 'h-10 w-10',
+        sm: 'h-8 px-3 text-sm'
+    };
+    
+    return (
+        <button 
+            type={type}
+            onClick={onClick}
+            disabled={disabled}
+            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+        >
+            {children}
+        </button>
+    );
+};
+
+const Input = ({ value, onChange, placeholder, className = '', type = 'text', id }) => (
+    <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    />
+);
+
+const Label = ({ children, htmlFor, className = '' }) => (
+    <label htmlFor={htmlFor} className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}>
+        {children}
+    </label>
+);
+
+const Textarea = ({ value, onChange, placeholder, className = '', id }) => (
+    <textarea
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`flex min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+        rows={3}
+    />
+);
+
+const Card = ({ children, className = '' }) => (
+    <div className={`rounded-lg border bg-white text-gray-900 shadow-sm ${className}`}>
+        {children}
+    </div>
+);
+
+const CardHeader = ({ children }) => (
+    <div className="flex flex-col space-y-1.5 p-6">{children}</div>
+);
+
+const CardContent = ({ children, className = '' }) => (
+    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+);
+
+const CardTitle = ({ children }) => (
+    <h3 className="text-2xl font-semibold leading-none tracking-tight">{children}</h3>
+);
+
+const CardDescription = ({ children }) => (
+    <p className="text-sm text-gray-600">{children}</p>
+);
+
+const Badge = ({ children, variant = 'default', className = '' }) => {
+    const variants = {
+        default: 'bg-blue-100 text-blue-800',
+        destructive: 'bg-red-100 text-red-800'
+    };
+    
+    return (
+        <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
+            {children}
+        </div>
+    );
+};
+
+const Select = ({ children, value, onValueChange }) => (
+    <select 
+        value={value} 
+        onChange={(e) => onValueChange(e.target.value)}
+        className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+        <option value="" disabled>Sélectionner un module...</option>
+        {children}
+    </select>
+);
+
+const SelectItem = ({ value, children }) => (
+    <option value={value}>{children}</option>
+);
+
+const Switch = ({ checked, onCheckedChange, id }) => (
+    <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onCheckedChange(e.target.checked)}
+        className="h-6 w-11 rounded-full bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    />
+);
+
+const Tabs = ({ children, value, onValueChange, className = '' }) => (
+    <div className={`w-full ${className}`}>
+        {React.Children.map(children, child => 
+            React.cloneElement(child, { activeTab: value, setActiveTab: onValueChange })
+        )}
+    </div>
+);
+
+const TabsList = ({ children, activeTab, setActiveTab }) => (
+    <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500">
+        {React.Children.map(children, child => 
+            React.cloneElement(child, { activeTab, setActiveTab })
+        )}
+    </div>
+);
+
+const TabsTrigger = ({ children, value, activeTab, setActiveTab }) => (
+    <button
+        onClick={() => setActiveTab(value)}
+        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+            activeTab === value 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-600 hover:text-gray-900'
+        }`}
+    >
+        {children}
+    </button>
+);
+
+const TabsContent = ({ children, value, activeTab }) => {
+    if (activeTab !== value) return null;
+    return (
+        <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            {children}
+        </div>
+    );
+};
+
+const Dialog = ({ children, open, onOpenChange }) => {
+    if (!open) return null;
+    
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => onOpenChange(false)} />
+            <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
+                {children}
+            </div>
+        </div>
+    );
+};
+
+const DialogContent = ({ children, className = '' }) => (
+    <div className={`p-6 ${className}`}>{children}</div>
+);
+
+const DialogHeader = ({ children }) => <div className="mb-4">{children}</div>;
+const DialogTitle = ({ children, className = '' }) => <h2 className={`text-lg font-semibold ${className}`}>{children}</h2>;
+const DialogFooter = ({ children }) => <div className="flex justify-end space-x-2 mt-6">{children}</div>;
+
+// Navigation Component simple
+const Navigation = () => (
+    <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+                <div className="flex items-center">
+                    <span className="text-xl font-semibold">Souveniirs Formation</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+);
+
+// Simple text editor component to replace ReactQuill
+const TextEditor = ({ value, onChange }) => (
+    <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="flex min-h-[120px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        placeholder="Saisissez le texte explicatif ici..."
+        rows={6}
+    />
+);
 
 const emptyModule = { title: '', description: '', order_index: 0, is_active: true };
 const emptyLesson = { 
@@ -32,16 +222,6 @@ export default function AdminContentPage() {
     const [itemToDelete, setItemToDelete] = useState(null);
     const [currentModule, setCurrentModule] = useState(emptyModule);
     const [currentLesson, setCurrentLesson] = useState(emptyLesson);
-
-    const quillModules = {
-        toolbar: [
-            [{ 'header': [1, 2, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            ['link'],
-            ['clean']
-        ],
-    };
 
     const handleOpenModuleModal = (module = null) => {
         setCurrentModule(module ? { ...module } : { ...emptyModule, order_index: modules.length + 1, id: null });
@@ -225,6 +405,7 @@ export default function AdminContentPage() {
                 </main>
             </div>
 
+            {/* Module Modal */}
             <Dialog open={isModuleModalOpen} onOpenChange={setModuleModalOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
@@ -255,6 +436,7 @@ export default function AdminContentPage() {
                 </DialogContent>
             </Dialog>
 
+            {/* Lesson Modal */}
             <Dialog open={isLessonModalOpen} onOpenChange={setLessonModalOpen}>
                 <DialogContent className="sm:max-w-4xl">
                     <DialogHeader>
@@ -263,11 +445,8 @@ export default function AdminContentPage() {
                     <div className="grid gap-y-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
                         <div className="grid grid-cols-4 items-center gap-x-4">
                             <Label htmlFor="l-module" className="text-right">Module</Label>
-                            <Select value={currentLesson.module_id?.toString()} onValueChange={value => setCurrentLesson({...currentLesson, module_id: value})} >
-                                <SelectTrigger className="col-span-3"><SelectValue placeholder="Sélectionner un module..." /></SelectTrigger>
-                                <SelectContent>
-                                    {modules.map(m => <SelectItem key={m.id} value={m.id.toString()}>{m.title}</SelectItem>)}
-                                </SelectContent>
+                            <Select value={currentLesson.module_id?.toString() || ''} onValueChange={value => setCurrentLesson({...currentLesson, module_id: value})} >
+                                {modules.map(m => <SelectItem key={m.id} value={m.id.toString()}>{m.title}</SelectItem>)}
                             </Select>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-x-4">
@@ -296,7 +475,10 @@ export default function AdminContentPage() {
                         </div>
                          <div className="col-span-4 space-y-2 pt-4">
                             <Label>Texte explicatif / Procédures</Label>
-                            <ReactQuill theme="snow" modules={quillModules} value={currentLesson.explanatory_text} onChange={val => setCurrentLesson(prev => ({...prev, explanatory_text: val}))}/>
+                            <TextEditor 
+                                value={currentLesson.explanatory_text} 
+                                onChange={val => setCurrentLesson(prev => ({...prev, explanatory_text: val}))}
+                            />
                         </div>
                         <div className="col-span-4 space-y-2 pt-4">
                             <Label>Liens de ressources</Label>
@@ -317,6 +499,7 @@ export default function AdminContentPage() {
                 </DialogContent>
             </Dialog>
 
+            {/* Delete Modal */}
             <Dialog open={isDeleteModalOpen} onOpenChange={setDeleteModalOpen}>
                 <DialogContent>
                     <DialogHeader>
