@@ -1,22 +1,188 @@
 import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
-import Navigation from '@/components/Navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '../contexts/AuthContext.js';
 import { PlusCircle, MoreHorizontal, Search, Trash2, Edit, Copy, Eye, EyeOff, RefreshCw, Mail, UserPlus, Users, Link as LinkIcon } from 'lucide-react';
 import { format, parseISO, differenceInDays, addMonths, isPast } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
-import { sendEmail } from '@/lib/email';
+import { sendEmail } from '../lib/email.js';
+
+// Fonction toast temporaire
+const toast = (options) => {
+    console.log('Toast:', options.title, '-', options.description);
+};
+
+// Composants UI simplifiés pour le déploiement
+const Button = ({ children, onClick, variant = 'default', size = 'default', disabled = false, className = '' }) => {
+    const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+    const variants = {
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
+        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+    };
+    const sizes = {
+        default: 'h-10 py-2 px-4',
+        icon: 'h-10 w-10',
+        sm: 'h-9 px-3 rounded-md',
+        lg: 'h-11 px-8 rounded-md'
+    };
+    
+    return (
+        <button 
+            onClick={onClick}
+            disabled={disabled}
+            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+        >
+            {children}
+        </button>
+    );
+};
+
+const Input = ({ value, onChange, placeholder, className = '', type = 'text', id }) => (
+    <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    />
+);
+
+const Label = ({ children, htmlFor }) => (
+    <label htmlFor={htmlFor} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        {children}
+    </label>
+);
+
+const Select = ({ children, value, onValueChange }) => {
+    return (
+        <div className="relative">
+            <select 
+                value={value} 
+                onChange={(e) => onValueChange(e.target.value)}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                {children}
+            </select>
+        </div>
+    );
+};
+
+const SelectItem = ({ value, children }) => (
+    <option value={value}>{children}</option>
+);
+
+const Card = ({ children, className = '' }) => (
+    <div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}>
+        {children}
+    </div>
+);
+
+const CardHeader = ({ children }) => (
+    <div className="flex flex-col space-y-1.5 p-6">{children}</div>
+);
+
+const CardContent = ({ children }) => (
+    <div className="p-6 pt-0">{children}</div>
+);
+
+const Badge = ({ children, variant = 'default', className = '' }) => {
+    const variants = {
+        default: 'bg-primary text-primary-foreground hover:bg-primary/80',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/80',
+        outline: 'text-foreground border border-input'
+    };
+    
+    return (
+        <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
+            {children}
+        </div>
+    );
+};
+
+const Dialog = ({ children, open, onOpenChange }) => {
+    if (!open) return null;
+    
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => onOpenChange(false)} />
+            <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
+                {children}
+            </div>
+        </div>
+    );
+};
+
+const DialogContent = ({ children }) => <div className="p-6">{children}</div>;
+const DialogHeader = ({ children }) => <div className="mb-4">{children}</div>;
+const DialogTitle = ({ children }) => <h2 className="text-lg font-semibold">{children}</h2>;
+const DialogDescription = ({ children }) => <p className="text-sm text-gray-600 mt-1">{children}</p>;
+const DialogFooter = ({ children }) => <div className="flex justify-end space-x-2 mt-6">{children}</div>;
+
+const DropdownMenu = ({ children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="relative">
+            {React.Children.map(children, child => 
+                React.cloneElement(child, { isOpen, setIsOpen })
+            )}
+        </div>
+    );
+};
+
+const DropdownMenuTrigger = ({ children, isOpen, setIsOpen }) => (
+    <div onClick={() => setIsOpen(!isOpen)}>
+        {children}
+    </div>
+);
+
+const DropdownMenuContent = ({ children, isOpen, setIsOpen }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+            <div className="py-1">
+                {React.Children.map(children, child => 
+                    React.cloneElement(child, { setIsOpen })
+                )}
+            </div>
+        </div>
+    );
+};
+
+const DropdownMenuItem = ({ children, onClick, className = '', disabled = false, setIsOpen }) => (
+    <button
+        onClick={() => {
+            if (!disabled && onClick) {
+                onClick();
+                setIsOpen(false);
+            }
+        }}
+        disabled={disabled}
+        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${className}`}
+    >
+        {children}
+    </button>
+);
+
+const DropdownMenuSeparator = () => (
+    <div className="h-px bg-gray-200 mx-1 my-1" />
+);
+
+// Navigation Component simple
+const Navigation = () => (
+    <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+                <div className="flex items-center">
+                    <span className="text-xl font-semibold">Souveniirs Formation</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+);
 
 const generatePassword = (length = 12) => {
     const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
@@ -85,15 +251,14 @@ export default function AdminUsersPage() {
             role: userToEdit.role,
         };
 
-		if (userToEdit.role === 'student' && userToEdit.access_duration) {
-		    updatedUserData.expires_at = addMonths(new Date(), userToEdit.access_duration).toISOString();
-		    // Réactiver l'utilisateur si la nouvelle date est dans le futur
-		    if (!isPast(new Date(updatedUserData.expires_at))) {
-		        updatedUserData.status = 'active';
-		    }
-		} else if (userToEdit.role === 'coach' || userToEdit.role === 'supercoach') {
-		    updatedUserData.expires_at = null;
-		}
+        if (userToEdit.role === 'student' && userToEdit.access_duration) {
+            updatedUserData.expires_at = addMonths(new Date(), userToEdit.access_duration).toISOString();
+            if (!isPast(new Date(updatedUserData.expires_at))) {
+                updatedUserData.status = 'active';
+            }
+        } else if (userToEdit.role === 'coach' || userToEdit.role === 'supercoach') {
+            updatedUserData.expires_at = null;
+        }
 
         updateUser(userToEdit.id, updatedUserData);
         toast({ title: 'Succès', description: 'Utilisateur mis à jour.' });
@@ -292,12 +457,12 @@ export default function AdminUsersPage() {
                                                     <td className="px-6 py-4">{user.expires_at ? `${differenceInDays(parseISO(user.expires_at), new Date())} jours restants` : 'N/A'}</td>
                                                     <td className="px-6 py-4">
                                                         <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
+                                                            <DropdownMenuTrigger>
                                                                 <Button variant="ghost" className="h-8 w-8 p-0">
                                                                     <MoreHorizontal className="h-4 w-4" />
                                                                 </Button>
                                                             </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end">
+                                                            <DropdownMenuContent>
                                                                 {user.role === 'student' && (
                                                                 <DropdownMenuItem onClick={() => navigate(`/coach/student/${user.id}`)}>
                                                                     <Users className="mr-2 h-4 w-4" /> Voir détails
@@ -320,7 +485,6 @@ export default function AdminUsersPage() {
                                                                     </DropdownMenuItem>
                                                                     </>
                                                                 )}
-
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     </td>
@@ -353,21 +517,15 @@ export default function AdminUsersPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="role">Rôle</Label>
                                 <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value })}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="student">Élève</SelectItem>
-                                        <SelectItem value="coach">Coach</SelectItem>
-                                    </SelectContent>
+                                    <SelectItem value="student">Élève</SelectItem>
+                                    <SelectItem value="coach">Coach</SelectItem>
                                 </Select>
                             </div>
                             {newUser.role === 'student' && (
                                 <div className="space-y-2">
                                     <Label htmlFor="access_duration">Durée d'accès (en mois)</Label>
                                     <Select value={String(newUser.access_duration)} onValueChange={(value) => setNewUser({ ...newUser, access_duration: Number(value) })}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            {[1, 3, 6, 12, 24].map(d => <SelectItem key={d} value={String(d)}>{d} mois</SelectItem>)}
-                                        </SelectContent>
+                                        {[1, 3, 6, 12, 24].map(d => <SelectItem key={d} value={String(d)}>{d} mois</SelectItem>)}
                                     </Select>
                                 </div>
                             )}
@@ -402,21 +560,15 @@ export default function AdminUsersPage() {
                                         onValueChange={(value) => setUserToEdit({ ...userToEdit, role: value })}
                                         disabled={userToEdit.role === 'supercoach'}
                                     >
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="student">Élève</SelectItem>
-                                            <SelectItem value="coach">Coach</SelectItem>
-                                        </SelectContent>
+                                        <SelectItem value="student">Élève</SelectItem>
+                                        <SelectItem value="coach">Coach</SelectItem>
                                     </Select>
                                 </div>
                                 {userToEdit.role === 'student' && (
                                     <div className="space-y-2">
                                         <Label htmlFor="edit_access_duration">Nouvelle durée d'accès (en mois)</Label>
                                         <Select value={String(userToEdit.access_duration)} onValueChange={(value) => setUserToEdit({ ...userToEdit, access_duration: Number(value) })}>
-                                            <SelectTrigger><SelectValue /></SelectTrigger>
-                                            <SelectContent>
-                                                {[1, 3, 6, 12, 24].map(d => <SelectItem key={d} value={String(d)}>{d} mois</SelectItem>)}
-                                            </SelectContent>
+                                            {[1, 3, 6, 12, 24].map(d => <SelectItem key={d} value={String(d)}>{d} mois</SelectItem>)}
                                         </Select>
                                         <p className="text-xs text-gray-500">La date d'expiration sera recalculée à partir d'aujourd'hui.</p>
                                     </div>
