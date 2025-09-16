@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import Navigation from '@/components/Navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/components/ui/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import Navigation from '../components/Navigation';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Play, 
   CheckCircle, 
@@ -20,6 +15,89 @@ import {
   FileText
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
+
+// Composants UI intégrés
+const Button = React.forwardRef(({ className = "", variant = "default", size = "default", ...props }, ref) => {
+  const baseClasses = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+  const variants = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90 bg-blue-600 text-white hover:bg-blue-700",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 bg-red-600 text-white hover:bg-red-700",
+    outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground border-gray-300 hover:bg-gray-50",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 bg-gray-100 text-gray-900 hover:bg-gray-200",
+    ghost: "hover:bg-accent hover:text-accent-foreground hover:bg-gray-100",
+    link: "text-primary underline-offset-4 hover:underline text-blue-600"
+  };
+  const sizes = {
+    default: "h-10 px-4 py-2",
+    sm: "h-9 rounded-md px-3",
+    lg: "h-11 rounded-md px-8",
+    icon: "h-10 w-10"
+  };
+  return (
+    <button
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+const Card = ({ className = "", ...props }) => (
+  <div className={`rounded-lg border bg-card text-card-foreground shadow-sm bg-white border-gray-200 ${className}`} {...props} />
+);
+
+const CardHeader = ({ className = "", ...props }) => (
+  <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props} />
+);
+
+const CardTitle = ({ className = "", ...props }) => (
+  <h3 className={`text-2xl font-semibold leading-none tracking-tight text-gray-900 ${className}`} {...props} />
+);
+
+const CardDescription = ({ className = "", ...props }) => (
+  <p className={`text-sm text-muted-foreground text-gray-600 ${className}`} {...props} />
+);
+
+const CardContent = ({ className = "", ...props }) => (
+  <div className={`p-6 pt-0 ${className}`} {...props} />
+);
+
+const Progress = ({ value = 0, className = "", ...props }) => (
+  <div className={`relative w-full overflow-hidden rounded-full bg-secondary bg-gray-200 ${className}`} {...props}>
+    <div
+      className="h-full w-full flex-1 bg-primary transition-all bg-blue-600"
+      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+    />
+  </div>
+);
+
+const Badge = ({ className = "", variant = "default", ...props }) => {
+  const variants = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/80 bg-blue-600 text-white",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 bg-gray-100 text-gray-900",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/80 bg-red-600 text-white",
+    outline: "text-foreground border border-gray-300 text-gray-900"
+  };
+  return (
+    <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`} {...props} />
+  );
+};
+
+// Toast function simplifiée
+const toast = ({ title, description }) => {
+  // Création simple d'un toast temporaire
+  const toastEl = document.createElement('div');
+  toastEl.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded-md shadow-lg z-50 transition-opacity';
+  toastEl.innerHTML = `<div class="font-semibold">${title}</div><div class="text-sm">${description}</div>`;
+  document.body.appendChild(toastEl);
+  
+  setTimeout(() => {
+    toastEl.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(toastEl);
+    }, 300);
+  }, 3000);
+};
 
 export default function LessonsPage() {
   const { user, getActiveModules } = useAuth();
