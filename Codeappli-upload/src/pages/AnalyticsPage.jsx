@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import Navigation from '@/components/Navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '../contexts/AuthContext.js';
 import { 
   Download, 
   BarChart as BarChartIcon, 
@@ -18,6 +15,66 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Line, Pie } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth, addMonths, isWithinInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
+// Composants UI simplifiés pour le déploiement
+const Button = ({ children, onClick, variant = 'default', size = 'default', disabled = false, className = '' }) => {
+    const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+    const variants = {
+        default: 'bg-blue-600 text-white hover:bg-blue-700',
+        ghost: 'hover:bg-gray-100 hover:text-gray-900',
+        outline: 'border border-gray-300 bg-white hover:bg-gray-50'
+    };
+    const sizes = {
+        default: 'h-10 py-2 px-4',
+        icon: 'h-10 w-10',
+        sm: 'h-8 px-3 text-sm'
+    };
+    
+    return (
+        <button 
+            onClick={onClick}
+            disabled={disabled}
+            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+        >
+            {children}
+        </button>
+    );
+};
+
+const Card = ({ children, className = '' }) => (
+    <div className={`rounded-lg border bg-white text-gray-900 shadow-sm ${className}`}>
+        {children}
+    </div>
+);
+
+const CardHeader = ({ children, className = '' }) => (
+    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>
+);
+
+const CardContent = ({ children, className = '' }) => (
+    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+);
+
+const CardTitle = ({ children, className = '' }) => (
+    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+);
+
+const CardDescription = ({ children, className = '' }) => (
+    <p className={`text-sm text-gray-600 ${className}`}>{children}</p>
+);
+
+// Navigation Component simple
+const Navigation = () => (
+    <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+                <div className="flex items-center">
+                    <span className="text-xl font-semibold">Souveniirs Formation</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+);
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -149,31 +206,31 @@ export default function AnalyticsPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Progression Moyenne</CardTitle>
-                        <PieChartIcon className="h-4 w-4 text-muted-foreground" />
+                        <PieChartIcon className="h-4 w-4 text-gray-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{analyticsData.averageProgression}%</div>
-                        <p className="text-xs text-muted-foreground">Taux de complétion moyen (tous les élèves)</p>
+                        <p className="text-xs text-gray-500">Taux de complétion moyen (tous les élèves)</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Revenus à Risque (30j)</CardTitle>
-                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                        <AlertTriangle className="h-4 w-4 text-gray-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{analyticsData.revenueAtRisk.toLocaleString('fr-FR')} €</div>
-                        <p className="text-xs text-muted-foreground">{analyticsData.expiringSoonCount} élèves payants expirent bientôt</p>
+                        <p className="text-xs text-gray-500">{analyticsData.expiringSoonCount} élèves payants expirent bientôt</p>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Élèves</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <Users className="h-4 w-4 text-gray-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{users.filter(u => u.role === 'student').length}</div>
-                        <p className="text-xs text-muted-foreground">Nombre total d'élèves inscrits</p>
+                        <p className="text-xs text-gray-500">Nombre total d'élèves inscrits</p>
                     </CardContent>
                 </Card>
             </div>
