@@ -1,13 +1,65 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '../contexts/AuthContext.js';
 import { KeyRound, CheckCircle, AlertTriangle } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+
+// Fonction toast temporaire
+const toast = (options) => {
+    console.log('Toast:', options.title, '-', options.description);
+};
+
+// Composants UI simplifiés
+const Button = ({ children, onClick, type = 'button', className = '', disabled = false }) => (
+    <button 
+        type={type}
+        onClick={onClick}
+        disabled={disabled}
+        className={`inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-blue-600 text-white hover:bg-blue-700 h-10 py-2 px-4 ${className}`}
+    >
+        {children}
+    </button>
+);
+
+const Input = ({ value, onChange, placeholder, className = '', type = 'text', id, required = false }) => (
+    <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    />
+);
+
+const Label = ({ children, htmlFor, className = '' }) => (
+    <label htmlFor={htmlFor} className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}>
+        {children}
+    </label>
+);
+
+const Card = ({ children, className = '' }) => (
+    <div className={`rounded-lg border bg-white text-gray-900 shadow-sm ${className}`}>
+        {children}
+    </div>
+);
+
+const CardHeader = ({ children, className = '' }) => (
+    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>
+);
+
+const CardContent = ({ children, className = '' }) => (
+    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+);
+
+const CardTitle = ({ children, className = '' }) => (
+    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+);
+
+const CardDescription = ({ children, className = '' }) => (
+    <p className={`text-sm text-gray-600 ${className}`}>{children}</p>
+);
 
 export default function FirstLoginPage() {
     const { user, changePassword } = useAuth();
