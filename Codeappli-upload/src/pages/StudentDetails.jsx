@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import Navigation from '../components/Navigation';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import { ArrowLeft, BookOpen, FileText, CheckCircle, Clock, ExternalLink, Calendar, User, Mail, AlertCircle } from 'lucide-react';
 import { format, formatDistanceToNow, isPast } from 'date-fns';
 import { fr } from 'date-fns/locale';
