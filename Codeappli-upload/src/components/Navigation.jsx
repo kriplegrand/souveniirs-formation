@@ -1,18 +1,97 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import { LogOut, BookOpen, FileText, Users, Settings, UserCircle, LayoutDashboard, BarChart2, UploadCloud } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { toast } from '@/components/ui/use-toast';
 
+// Fonction toast temporaire
+const toast = (options) => {
+    console.log('Toast:', options.title, '-', options.description);
+};
+
+// Composants UI simplifiés
+const Button = ({ children, variant = 'default', className = '', onClick, ...props }) => {
+    const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+    const variants = {
+        default: 'bg-blue-600 text-white hover:bg-blue-700',
+        ghost: 'hover:bg-gray-100 hover:text-gray-900',
+        secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+    };
+    
+    return (
+        <button 
+            onClick={onClick}
+            className={`${baseStyles} ${variants[variant]} h-10 py-2 px-4 ${className}`}
+            {...props}
+        >
+            {children}
+        </button>
+    );
+};
+
+const DropdownMenu = ({ children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="relative">
+            {React.Children.map(children, child => 
+                React.cloneElement(child, { isOpen, setIsOpen })
+            )}
+        </div>
+    );
+};
+
+const DropdownMenuTrigger = ({ children, isOpen, setIsOpen, asChild }) => (
+    <div onClick={() => setIsOpen(!isOpen)}>
+        {children}
+    </div>
+);
+
+const DropdownMenuContent = ({ children, isOpen, setIsOpen, className = '', align = 'end' }) => {
+    if (!isOpen) return null;
+    const alignClass = align === 'end' ? 'right-0' : 'left-0';
+    return (
+        <div className={`absolute ${alignClass} mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 ${className}`}>
+            <div className="py-1">
+                {React.Children.map(children, child => 
+                    React.cloneElement(child, { setIsOpen })
+                )}
+            </div>
+        </div>
+    );
+};
+
+const DropdownMenuItem = ({ children, onClick, className = '', setIsOpen, asChild }) => {
+    if (asChild) {
+        return React.cloneElement(children, {
+            className: `w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center cursor-pointer ${className}`,
+            onClick: () => {
+                if (onClick) onClick();
+                setIsOpen(false);
+            }
+        });
+    }
+    
+    return (
+        <button
+            onClick={() => {
+                if (onClick) onClick();
+                setIsOpen(false);
+            }}
+            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center cursor-pointer ${className}`}
+        >
+            {children}
+        </button>
+    );
+};
+
+const DropdownMenuLabel = ({ children, className = '' }) => (
+    <div className={`px-4 py-2 text-sm font-medium text-gray-900 ${className}`}>
+        {children}
+    </div>
+);
+
+const DropdownMenuSeparator = () => (
+    <div className="h-px bg-gray-200 mx-1 my-1" />
+);
 
 export default function Navigation() {
   const { user, logout } = useAuth();
@@ -176,11 +255,11 @@ export default function Navigation() {
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuContent className="w-56" align="end">
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">{user?.name}</p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-xs leading-none text-gray-500">
                           {user?.email}
                         </p>
                       </div>
