@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import { KeyRound, CheckCircle, AlertTriangle } from 'lucide-react';
 
 // Fonction toast temporaire
