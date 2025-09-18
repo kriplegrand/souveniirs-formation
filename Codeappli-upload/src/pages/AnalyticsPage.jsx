@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import Navigation from '../components/Navigation.jsx';
 import { 
   Download, 
   BarChart as BarChartIcon, 
@@ -61,19 +62,6 @@ const CardTitle = ({ children, className = '' }) => (
 
 const CardDescription = ({ children, className = '' }) => (
     <p className={`text-sm text-gray-600 ${className}`}>{children}</p>
-);
-
-// Navigation Component simple
-const Navigation = () => (
-    <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-                <div className="flex items-center">
-                    <span className="text-xl font-semibold">Souveniirs Formation</span>
-                </div>
-            </div>
-        </div>
-    </nav>
 );
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
