@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import Navigation from '../components/Navigation.jsx';
 import { Plus, Edit, Trash2, GripVertical, Link as LinkIcon, AlertTriangle } from 'lucide-react';
 
 // Fonction toast temporaire
@@ -182,19 +183,6 @@ const DialogContent = ({ children, className = '' }) => (
 const DialogHeader = ({ children }) => <div className="mb-4">{children}</div>;
 const DialogTitle = ({ children, className = '' }) => <h2 className={`text-lg font-semibold ${className}`}>{children}</h2>;
 const DialogFooter = ({ children }) => <div className="flex justify-end space-x-2 mt-6">{children}</div>;
-
-// Navigation Component simple
-const Navigation = () => (
-    <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-                <div className="flex items-center">
-                    <span className="text-xl font-semibold">Souveniirs Formation</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-);
 
 // Simple text editor component to replace ReactQuill
 const TextEditor = ({ value, onChange }) => (
