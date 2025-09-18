@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import Navigation from '../components/Navigation.jsx';
 import { 
   Users, 
   BookOpen, 
@@ -47,19 +48,6 @@ const CardContent = ({ children, className = '' }) => (
 
 const CardTitle = ({ children, className = '' }) => (
     <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
-);
-
-// Navigation Component simple
-const Navigation = () => (
-    <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-                <div className="flex items-center">
-                    <span className="text-xl font-semibold">Souveniirs Formation</span>
-                </div>
-            </div>
-        </div>
-    </nav>
 );
 
 export default function CoachDashboard() {
