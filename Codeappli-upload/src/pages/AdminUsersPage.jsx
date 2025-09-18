@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import Navigation from '../components/Navigation.jsx';
 import { PlusCircle, MoreHorizontal, Search, Trash2, Edit, Copy, Eye, EyeOff, RefreshCw, Mail, UserPlus, Users, Link as LinkIcon } from 'lucide-react';
 import { format, parseISO, differenceInDays, addMonths, isPast } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -169,19 +170,6 @@ const DropdownMenuItem = ({ children, onClick, className = '', disabled = false,
 
 const DropdownMenuSeparator = () => (
     <div className="h-px bg-gray-200 mx-1 my-1" />
-);
-
-// Navigation Component simple
-const Navigation = () => (
-    <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-                <div className="flex items-center">
-                    <span className="text-xl font-semibold">Souveniirs Formation</span>
-                </div>
-            </div>
-        </div>
-    </nav>
 );
 
 const generatePassword = (length = 12) => {
@@ -578,10 +566,10 @@ export default function AdminUsersPage() {
                                 <Button variant="outline" onClick={() => setEditUserModalOpen(false)}>Annuler</Button>
                                 <Button onClick={handleEditUser}>Enregistrer les modifications</Button>
                             </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                )}
-            </div>
-        </>
-    );
-}
+					</DialogContent>
+			                    </Dialog>
+			                )}
+			            </div>
+			        </>
+			    );
+			}
