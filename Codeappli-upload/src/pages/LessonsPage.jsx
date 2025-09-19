@@ -222,17 +222,41 @@ export default function LessonsPage() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between border-t pt-4">
-                        <Button variant="outline" onClick={() => navigateLesson('prev')} disabled={isFirstLesson}>
-                          <ChevronLeft className="h-4 w-4 mr-2" />Précédent
-                        </Button>
-                        <Button onClick={() => markAsCompleted(currentLesson.id)} disabled={completedLessons.has(currentLesson.id)}>
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          {completedLessons.has(currentLesson.id) ? 'Terminé' : 'Marquer comme terminé'}
-                        </Button>
-                        <Button variant="outline" onClick={() => navigateLesson('next')} disabled={isLastLesson}>
-                          Suivant<ChevronRight className="h-4 w-4 ml-2" />
-                        </Button>
+                      {/* Navigation buttons - Version responsive */}
+                      <div className="border-t pt-4">
+                        {/* Version mobile : boutons empilés */}
+                        <div className="flex flex-col space-y-3 md:hidden">
+                          <Button 
+                            onClick={() => markAsCompleted(currentLesson.id)} 
+                            disabled={completedLessons.has(currentLesson.id)}
+                            className="w-full"
+                          >
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            {completedLessons.has(currentLesson.id) ? 'Terminé' : 'Marquer comme terminé'}
+                          </Button>
+                          <div className="flex justify-between space-x-3">
+                            <Button variant="outline" onClick={() => navigateLesson('prev')} disabled={isFirstLesson} className="flex-1">
+                              <ChevronLeft className="h-4 w-4 mr-2" />Précédent
+                            </Button>
+                            <Button variant="outline" onClick={() => navigateLesson('next')} disabled={isLastLesson} className="flex-1">
+                              Suivant<ChevronRight className="h-4 w-4 ml-2" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Version desktop : boutons en ligne */}
+                        <div className="hidden md:flex items-center justify-between">
+                          <Button variant="outline" onClick={() => navigateLesson('prev')} disabled={isFirstLesson}>
+                            <ChevronLeft className="h-4 w-4 mr-2" />Précédent
+                          </Button>
+                          <Button onClick={() => markAsCompleted(currentLesson.id)} disabled={completedLessons.has(currentLesson.id)}>
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            {completedLessons.has(currentLesson.id) ? 'Terminé' : 'Marquer comme terminé'}
+                          </Button>
+                          <Button variant="outline" onClick={() => navigateLesson('next')} disabled={isLastLesson}>
+                            Suivant<ChevronRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </div>
                       </div>
                   </CardHeader>
                 </Card>
