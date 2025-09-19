@@ -39,15 +39,15 @@ const Card = ({ children, className = '' }) => (
 );
 
 const CardHeader = ({ children, className = '' }) => (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>
+    <div className={`flex flex-col space-y-1.5 p-4 sm:p-6 ${className}`}>{children}</div>
 );
 
 const CardContent = ({ children, className = '' }) => (
-    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+    <div className={`p-4 pt-0 sm:p-6 sm:pt-0 ${className}`}>{children}</div>
 );
 
 const CardTitle = ({ children, className = '' }) => (
-    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+    <h3 className={`text-lg sm:text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
 );
 
 export default function CoachDashboard() {
@@ -93,23 +93,28 @@ export default function CoachDashboard() {
       </Helmet>
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <main className="max-w-7xl mx-auto p-6">
+        <main className="max-w-7xl mx-auto p-4 sm:p-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord {user.role === 'supercoach' ? 'Supercoach' : 'Coach'}</h1>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  Tableau de Bord {user.role === 'supercoach' ? 'Supercoach' : 'Coach'}
+                </h1>
                 <Link to="/admin/users">
-                  <Button><UserPlus className="h-4 w-4 mr-2" />Ajouter un élève</Button>
+                  <Button className="w-full sm:w-auto">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Ajouter un élève
+                  </Button>
                 </Link>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {statCards.map((stat, index) => (
                  <Card key={index}>
-                  <CardContent className="p-6 flex items-center space-x-4">
-                    <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                    <div>
-                      <p className="text-2xl font-bold">{stat.value}</p>
-                      <p className="text-sm text-gray-600">{stat.title}</p>
+                  <CardContent className="p-4 sm:p-6 flex items-center space-x-3 sm:space-x-4">
+                    <stat.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${stat.color} flex-shrink-0`} />
+                    <div className="min-w-0">
+                      <p className="text-xl sm:text-2xl font-bold">{stat.value}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">{stat.title}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -118,24 +123,30 @@ export default function CoachDashboard() {
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
-                    <CardHeader><CardTitle>Activité Récente</CardTitle></CardHeader>
+                    <CardHeader>
+                      <CardTitle>Activité Récente</CardTitle>
+                    </CardHeader>
                     <CardContent>
-                        <p className="text-gray-500 text-center py-8">La section d'activité récente sera bientôt disponible.</p>
+                        <p className="text-gray-500 text-center py-6 sm:py-8 text-sm sm:text-base">
+                          La section d'activité récente sera bientôt disponible.
+                        </p>
                     </CardContent>
                 </Card>
                  <Card>
-                    <CardHeader><CardTitle>Raccourcis</CardTitle></CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-4">
+                    <CardHeader>
+                      <CardTitle>Raccourcis</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                        <Link to="/admin/users">
-                         <Button variant="outline" className="w-full h-24 flex-col">
-                           <Users className="h-6 w-6 mb-2" />
-                           Gérer les Utilisateurs
+                         <Button variant="outline" className="w-full h-20 sm:h-24 flex-col">
+                           <Users className="h-5 w-5 sm:h-6 sm:w-6 mb-2" />
+                           <span className="text-xs sm:text-sm text-center">Gérer les Utilisateurs</span>
                          </Button>
                        </Link>
                        <Link to="/admin/content">
-                         <Button variant="outline" className="w-full h-24 flex-col">
-                           <BookOpen className="h-6 w-6 mb-2" />
-                           Gérer le Contenu
+                         <Button variant="outline" className="w-full h-20 sm:h-24 flex-col">
+                           <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 mb-2" />
+                           <span className="text-xs sm:text-sm text-center">Gérer le Contenu</span>
                          </Button>
                        </Link>
                     </CardContent>
