@@ -49,19 +49,19 @@ const Card = ({ children, className = '' }) => (
 );
 
 const CardHeader = ({ children, className = '' }) => (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>
+    <div className={`flex flex-col space-y-1.5 p-4 sm:p-6 ${className}`}>{children}</div>
 );
 
 const CardContent = ({ children, className = '' }) => (
-    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+    <div className={`p-4 pt-0 sm:p-6 sm:pt-0 ${className}`}>{children}</div>
 );
 
 const CardTitle = ({ children, className = '' }) => (
-    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+    <h3 className={`text-lg sm:text-2xl font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
 );
 
 const CardDescription = ({ children, className = '' }) => (
-    <p className={`text-sm text-gray-600 ${className}`}>{children}</p>
+    <p className={`text-xs sm:text-sm text-gray-600 ${className}`}>{children}</p>
 );
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
@@ -183,41 +183,44 @@ export default function AnalyticsPage() {
       </Helmet>
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <main className="max-w-7xl mx-auto p-6">
+        <main className="max-w-7xl mx-auto p-4 sm:p-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-              <Button onClick={handleExport}><Download className="h-4 w-4 mr-2" />Exporter les données</Button>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics</h1>
+              <Button onClick={handleExport} className="w-full sm:w-auto">
+                <Download className="h-4 w-4 mr-2" />
+                Exporter les données
+              </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Progression Moyenne</CardTitle>
-                        <PieChartIcon className="h-4 w-4 text-gray-500" />
+                        <PieChartIcon className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{analyticsData.averageProgression}%</div>
+                        <div className="text-xl sm:text-2xl font-bold">{analyticsData.averageProgression}%</div>
                         <p className="text-xs text-gray-500">Taux de complétion moyen (tous les élèves)</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Revenus à Risque (30j)</CardTitle>
-                        <AlertTriangle className="h-4 w-4 text-gray-500" />
+                        <AlertTriangle className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{analyticsData.revenueAtRisk.toLocaleString('fr-FR')} €</div>
+                        <div className="text-xl sm:text-2xl font-bold">{analyticsData.revenueAtRisk.toLocaleString('fr-FR')} €</div>
                         <p className="text-xs text-gray-500">{analyticsData.expiringSoonCount} élèves payants expirent bientôt</p>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Élèves</CardTitle>
-                        <Users className="h-4 w-4 text-gray-500" />
+                        <Users className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{users.filter(u => u.role === 'student').length}</div>
+                        <div className="text-xl sm:text-2xl font-bold">{users.filter(u => u.role === 'student').length}</div>
                         <p className="text-xs text-gray-500">Nombre total d'élèves inscrits</p>
                     </CardContent>
                 </Card>
@@ -225,56 +228,77 @@ export default function AnalyticsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center"><BarChartIcon className="mr-2" />Revenus et Inscriptions Mensuels</CardTitle>
+                <CardTitle className="flex items-center">
+                  <BarChartIcon className="mr-2 flex-shrink-0" />
+                  <span className="text-base sm:text-2xl">Revenus et Inscriptions Mensuels</span>
+                </CardTitle>
                 <CardDescription>Basé sur les 6 derniers mois. Revenus basés sur les élèves payants.</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={analyticsData.monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis yAxisId="left" orientation="left" stroke="#8884d8" label={{ value: 'Revenus (€)', angle: -90, position: 'insideLeft' }} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" label={{ value: 'Nouveaux élèves', angle: 90, position: 'insideRight' }} />
-                    <Tooltip formatter={(value, name) => [typeof value === 'number' ? value.toLocaleString('fr-FR') : value, name]} />
-                    <Legend />
-                    <Bar yAxisId="left" dataKey="Revenus (€)" fill="#8884d8" />
-                    <Bar yAxisId="right" dataKey="Nouveaux élèves" fill="#82ca9d" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="w-full overflow-x-auto">
+                  <div className="min-w-[600px] lg:min-w-full">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={analyticsData.monthlyData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis yAxisId="left" orientation="left" stroke="#8884d8" label={{ value: 'Revenus (€)', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 12 }} />
+                        <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" label={{ value: 'Nouveaux élèves', angle: 90, position: 'insideRight' }} tick={{ fontSize: 12 }} />
+                        <Tooltip formatter={(value, name) => [typeof value === 'number' ? value.toLocaleString('fr-FR') : value, name]} />
+                        <Legend />
+                        <Bar yAxisId="left" dataKey="Revenus (€)" fill="#8884d8" />
+                        <Bar yAxisId="right" dataKey="Nouveaux élèves" fill="#82ca9d" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center"><TrendingUp className="mr-2 text-green-500" />Top 5 Leçons les Plus Suivies</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="mr-2 text-green-500 flex-shrink-0" />
+                    <span className="text-base sm:text-xl">Top 5 Leçons les Plus Suivies</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={analyticsData.topLessons} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" />
-                      <YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 12 }} />
-                      <Tooltip />
-                      <Bar dataKey="completions" name="Complétions" fill={COLORS[1]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="w-full overflow-x-auto">
+                    <div className="min-w-[400px]">
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={analyticsData.topLessons} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis type="number" tick={{ fontSize: 10 }} />
+                          <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 10 }} />
+                          <Tooltip />
+                          <Bar dataKey="completions" name="Complétions" fill={COLORS[1]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center"><TrendingDown className="mr-2 text-red-500" />Top 5 Leçons les Moins Suivies</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <TrendingDown className="mr-2 text-red-500 flex-shrink-0" />
+                    <span className="text-base sm:text-xl">Top 5 Leçons les Moins Suivies</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={analyticsData.bottomLessons} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" />
-                      <YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 12 }} />
-                      <Tooltip />
-                      <Bar dataKey="completions" name="Complétions" fill={COLORS[3]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="w-full overflow-x-auto">
+                    <div className="min-w-[400px]">
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={analyticsData.bottomLessons} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis type="number" tick={{ fontSize: 10 }} />
+                          <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 10 }} />
+                          <Tooltip />
+                          <Bar dataKey="completions" name="Complétions" fill={COLORS[3]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
