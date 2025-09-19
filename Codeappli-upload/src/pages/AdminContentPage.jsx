@@ -72,19 +72,19 @@ const Card = ({ children, className = '' }) => (
 );
 
 const CardHeader = ({ children }) => (
-    <div className="flex flex-col space-y-1.5 p-6">{children}</div>
+    <div className="flex flex-col space-y-1.5 p-4 sm:p-6">{children}</div>
 );
 
 const CardContent = ({ children, className = '' }) => (
-    <div className={`p-6 pt-0 ${className}`}>{children}</div>
+    <div className={`p-4 pt-0 sm:p-6 sm:pt-0 ${className}`}>{children}</div>
 );
 
 const CardTitle = ({ children }) => (
-    <h3 className="text-2xl font-semibold leading-none tracking-tight">{children}</h3>
+    <h3 className="text-lg sm:text-2xl font-semibold leading-none tracking-tight">{children}</h3>
 );
 
 const CardDescription = ({ children }) => (
-    <p className="text-sm text-gray-600">{children}</p>
+    <p className="text-xs sm:text-sm text-gray-600">{children}</p>
 );
 
 const Badge = ({ children, variant = 'default', className = '' }) => {
@@ -167,9 +167,9 @@ const Dialog = ({ children, open, onOpenChange }) => {
     if (!open) return null;
     
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-2 sm:p-4 pt-4 sm:pt-8">
             <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => onOpenChange(false)} />
-            <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
+            <div className="relative bg-white rounded-lg shadow-lg w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
                 {children}
             </div>
         </div>
@@ -177,12 +177,12 @@ const Dialog = ({ children, open, onOpenChange }) => {
 };
 
 const DialogContent = ({ children, className = '' }) => (
-    <div className={`p-6 ${className}`}>{children}</div>
+    <div className={`flex flex-col max-h-[95vh] ${className}`}>{children}</div>
 );
 
-const DialogHeader = ({ children }) => <div className="mb-4">{children}</div>;
-const DialogTitle = ({ children, className = '' }) => <h2 className={`text-lg font-semibold ${className}`}>{children}</h2>;
-const DialogFooter = ({ children }) => <div className="flex justify-end space-x-2 mt-6">{children}</div>;
+const DialogHeader = ({ children }) => <div className="p-4 sm:p-6 border-b flex-shrink-0">{children}</div>;
+const DialogTitle = ({ children, className = '' }) => <h2 className={`text-base sm:text-lg font-semibold ${className}`}>{children}</h2>;
+const DialogFooter = ({ children }) => <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 p-4 sm:p-6 border-t flex-shrink-0">{children}</div>;
 
 // Simple text editor component to replace ReactQuill
 const TextEditor = ({ value, onChange }) => (
@@ -329,11 +329,11 @@ export default function AdminContentPage() {
             </Helmet>
             <div className="min-h-screen bg-gray-50">
                 <Navigation />
-                <main className="max-w-7xl mx-auto p-6">
+                <main className="max-w-7xl mx-auto p-4 sm:p-6">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h1 className="text-3xl font-bold text-gray-900">Gestion du Contenu</h1>
-                            <Button onClick={() => activeTab === 'modules' ? handleOpenModuleModal() : handleOpenLessonModal(null, modules[0]?.id)}>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestion du Contenu</h1>
+                            <Button onClick={() => activeTab === 'modules' ? handleOpenModuleModal() : handleOpenLessonModal(null, modules[0]?.id)} className="w-full sm:w-auto">
                                 <Plus className="h-4 w-4 mr-2" />
                                 {activeTab === 'modules' ? 'Nouveau Module' : 'Nouvelle Leçon'}
                             </Button>
@@ -345,17 +345,24 @@ export default function AdminContentPage() {
                             </TabsList>
                             <TabsContent value="modules">
                                 <Card>
-                                    <CardContent className="p-6 space-y-4">
+                                    <CardContent className="p-4 sm:p-6 space-y-4">
                                         {sortedModules.map(module => (
-                                            <div key={module.id} className="flex items-center p-4 border rounded-lg bg-white shadow-sm">
-                                                <GripVertical className="h-5 w-5 text-gray-400 cursor-grab" />
-                                                <div className="ml-4 flex-grow">
-                                                    <p className="font-semibold">{module.title} {!module.is_active && <Badge variant="destructive" className="ml-2">Inactif</Badge>}</p>
-                                                    <p className="text-sm text-gray-500">{module.description}</p>
+                                            <div key={module.id} className="flex items-center p-3 sm:p-4 border rounded-lg bg-white shadow-sm">
+                                                <GripVertical className="h-5 w-5 text-gray-400 cursor-grab flex-shrink-0" />
+                                                <div className="ml-3 sm:ml-4 flex-grow min-w-0">
+                                                    <p className="font-semibold text-sm sm:text-base truncate">
+                                                        {module.title} 
+                                                        {!module.is_active && <Badge variant="destructive" className="ml-2">Inactif</Badge>}
+                                                    </p>
+                                                    <p className="text-xs sm:text-sm text-gray-500 truncate">{module.description}</p>
                                                 </div>
-                                                <div className="space-x-2">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenModuleModal(module)}><Edit className="h-4 w-4" /></Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => openDeleteConfirmation('module', module.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                                                <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
+                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenModuleModal(module)}>
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" onClick={() => openDeleteConfirmation('module', module.id)}>
+                                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                                    </Button>
                                                 </div>
                                             </div>
                                         ))}
@@ -365,24 +372,36 @@ export default function AdminContentPage() {
                             <TabsContent value="lecons">
                                 {sortedModules.map(module => (
                                     <div key={module.id} className="mb-6">
-                                        <h2 className="text-xl font-semibold mb-2">{module.title}</h2>
+                                        <h2 className="text-lg sm:text-xl font-semibold mb-2">{module.title}</h2>
                                         <Card>
-                                            <CardContent className="p-6 space-y-4">
+                                            <CardContent className="p-4 sm:p-6 space-y-4">
                                                 {(module.lessons || []).sort((a,b) => a.order_index - b.order_index).map(lesson => (
-                                                    <div key={lesson.id} className="flex items-center p-4 border rounded-lg bg-white shadow-sm">
-                                                        <GripVertical className="h-5 w-5 text-gray-400 cursor-grab" />
-                                                        <div className="ml-4 flex-grow">
-                                                            <p className="font-semibold">{lesson.title} {!lesson.is_active && <Badge variant="destructive" className="ml-2">Inactive</Badge>}</p>
-                                                            <p className="text-sm text-gray-500">{lesson.description}</p>
+                                                    <div key={lesson.id} className="flex items-center p-3 sm:p-4 border rounded-lg bg-white shadow-sm">
+                                                        <GripVertical className="h-5 w-5 text-gray-400 cursor-grab flex-shrink-0" />
+                                                        <div className="ml-3 sm:ml-4 flex-grow min-w-0">
+                                                            <p className="font-semibold text-sm sm:text-base truncate">
+                                                                {lesson.title} 
+                                                                {!lesson.is_active && <Badge variant="destructive" className="ml-2">Inactive</Badge>}
+                                                            </p>
+                                                            <p className="text-xs sm:text-sm text-gray-500 truncate">{lesson.description}</p>
                                                         </div>
-                                                        <div className="space-x-2">
-                                                            <Button variant="ghost" size="icon" onClick={() => handleOpenLessonModal(lesson, module.id)}><Edit className="h-4 w-4" /></Button>
-                                                            <Button variant="ghost" size="icon" onClick={() => openDeleteConfirmation('lesson', lesson.id, module.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                                                        <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
+                                                            <Button variant="ghost" size="icon" onClick={() => handleOpenLessonModal(lesson, module.id)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" onClick={() => openDeleteConfirmation('lesson', lesson.id, module.id)}>
+                                                                <Trash2 className="h-4 w-4 text-red-500" />
+                                                            </Button>
                                                         </div>
                                                     </div>
                                                 ))}
-                                                {(!module.lessons || module.lessons.length === 0) && <p className="text-sm text-gray-500 text-center py-4">Aucune leçon dans ce module.</p>}
-                                                <Button variant="outline" size="sm" onClick={() => handleOpenLessonModal(null, module.id)}><Plus className="h-4 w-4 mr-2"/>Ajouter une leçon à ce module</Button>
+                                                {(!module.lessons || module.lessons.length === 0) && 
+                                                    <p className="text-xs sm:text-sm text-gray-500 text-center py-4">Aucune leçon dans ce module.</p>
+                                                }
+                                                <Button variant="outline" size="sm" onClick={() => handleOpenLessonModal(null, module.id)} className="w-full sm:w-auto">
+                                                    <Plus className="h-4 w-4 mr-2"/>
+                                                    Ajouter une leçon à ce module
+                                                </Button>
                                             </CardContent>
                                         </Card>
                                     </div>
@@ -395,94 +414,104 @@ export default function AdminContentPage() {
 
             {/* Module Modal */}
             <Dialog open={isModuleModalOpen} onOpenChange={setModuleModalOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{currentModule.id ? "Modifier le Module" : "Créer un Module"}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="m-title" className="text-right">Titre</Label>
-                            <Input id="m-title" value={currentModule.title} onChange={e => setCurrentModule({...currentModule, title: e.target.value})} className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="m-desc" className="text-right">Description</Label>
-                            <Textarea id="m-desc" value={currentModule.description} onChange={e => setCurrentModule({...currentModule, description: e.target.value})} className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="m-order" className="text-right">Ordre</Label>
-                            <Input id="m-order" type="number" value={currentModule.order_index} onChange={e => setCurrentModule({...currentModule, order_index: parseInt(e.target.value, 10) || 0})} className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="m-active" className="text-right">Actif</Label>
-                            <Switch id="m-active" checked={currentModule.is_active} onCheckedChange={checked => setCurrentModule({...currentModule, is_active: checked})} />
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="m-title">Titre</Label>
+                                <Input id="m-title" value={currentModule.title} onChange={e => setCurrentModule({...currentModule, title: e.target.value})} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="m-desc">Description</Label>
+                                <Textarea id="m-desc" value={currentModule.description} onChange={e => setCurrentModule({...currentModule, description: e.target.value})} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="m-order">Ordre</Label>
+                                <Input id="m-order" type="number" value={currentModule.order_index} onChange={e => setCurrentModule({...currentModule, order_index: parseInt(e.target.value, 10) || 0})} />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch id="m-active" checked={currentModule.is_active} onCheckedChange={checked => setCurrentModule({...currentModule, is_active: checked})} />
+                                <Label htmlFor="m-active">Module actif</Label>
+                            </div>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" onClick={() => setModuleModalOpen(false)} variant="outline">Annuler</Button>
-                        <Button type="button" onClick={handleSaveModule}>Sauvegarder</Button>
+                        <Button type="button" onClick={() => setModuleModalOpen(false)} variant="outline" className="w-full sm:w-auto">Annuler</Button>
+                        <Button type="button" onClick={handleSaveModule} className="w-full sm:w-auto">Sauvegarder</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Lesson Modal */}
             <Dialog open={isLessonModalOpen} onOpenChange={setLessonModalOpen}>
-                <DialogContent className="sm:max-w-4xl">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{currentLesson.id ? "Modifier la Leçon" : "Créer une Leçon"}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-y-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
-                        <div className="grid grid-cols-4 items-center gap-x-4">
-                            <Label htmlFor="l-module" className="text-right">Module</Label>
-                            <Select value={currentLesson.module_id?.toString() || ''} onValueChange={value => setCurrentLesson({...currentLesson, module_id: value})} >
-                                {modules.map(m => <SelectItem key={m.id} value={m.id.toString()}>{m.title}</SelectItem>)}
-                            </Select>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-x-4">
-                            <Label htmlFor="l-title" className="text-right">Titre</Label>
-                            <Input id="l-title" value={currentLesson.title} onChange={e => setCurrentLesson({...currentLesson, title: e.target.value})} className="col-span-3" />
-                        </div>
-                         <div className="grid grid-cols-4 items-start gap-x-4">
-                            <Label htmlFor="l-desc" className="text-right pt-2">Description</Label>
-                            <Textarea id="l-desc" value={currentLesson.description} onChange={e => setCurrentLesson({...currentLesson, description: e.target.value})} className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-x-4">
-                            <Label htmlFor="l-video" className="text-right">URL Vidéo</Label>
-                            <Input id="l-video" value={currentLesson.video_url} onChange={e => setCurrentLesson({...currentLesson, video_url: e.target.value})} className="col-span-3" placeholder="https://youtube.com/embed/..."/>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-x-4">
-                            <Label htmlFor="l-duration" className="text-right">Durée</Label>
-                            <Input id="l-duration" value={currentLesson.duration} onChange={e => setCurrentLesson({...currentLesson, duration: e.target.value})} className="col-span-3" placeholder="ex: 15 min"/>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-x-4">
-                            <Label htmlFor="l-order" className="text-right">Ordre</Label>
-                            <Input id="l-order" type="number" value={currentLesson.order_index} onChange={e => setCurrentLesson({...currentLesson, order_index: parseInt(e.target.value, 10) || 0})} className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-x-4">
-                            <Label htmlFor="l-active" className="text-right">Active</Label>
-                            <Switch id="l-active" checked={currentLesson.is_active} onCheckedChange={checked => setCurrentLesson({...currentLesson, is_active: checked})} />
-                        </div>
-                         <div className="col-span-4 space-y-2 pt-4">
-                            <Label>Texte explicatif / Procédures</Label>
-                            <TextEditor 
-                                value={currentLesson.explanatory_text} 
-                                onChange={val => setCurrentLesson(prev => ({...prev, explanatory_text: val}))}
-                            />
-                        </div>
-                        <div className="col-span-4 space-y-2 pt-4">
-                            <Label>Liens de ressources</Label>
-                            {(currentLesson.resources_links || []).map((link, index) => (
-                                <div key={index} className="grid grid-cols-12 gap-2 p-2 border rounded">
-                                    <Input className="col-span-5" placeholder="Titre du lien" value={link.title} onChange={e => handleResourceLinkChange(index, 'title', e.target.value)} />
-                                    <Input className="col-span-6" placeholder="URL" value={link.url} onChange={e => handleResourceLinkChange(index, 'url', e.target.value)} />
-                                    <Button className="col-span-1" variant="ghost" size="icon" onClick={() => handleRemoveResourceLink(index)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="l-module">Module</Label>
+                                <Select value={currentLesson.module_id?.toString() || ''} onValueChange={value => setCurrentLesson({...currentLesson, module_id: value})} >
+                                    {modules.map(m => <SelectItem key={m.id} value={m.id.toString()}>{m.title}</SelectItem>)}
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="l-title">Titre</Label>
+                                <Input id="l-title" value={currentLesson.title} onChange={e => setCurrentLesson({...currentLesson, title: e.target.value})} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="l-desc">Description</Label>
+                                <Textarea id="l-desc" value={currentLesson.description} onChange={e => setCurrentLesson({...currentLesson, description: e.target.value})} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="l-video">URL Vidéo</Label>
+                                <Input id="l-video" value={currentLesson.video_url} onChange={e => setCurrentLesson({...currentLesson, video_url: e.target.value})} placeholder="https://youtube.com/embed/..."/>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="l-duration">Durée</Label>
+                                    <Input id="l-duration" value={currentLesson.duration} onChange={e => setCurrentLesson({...currentLesson, duration: e.target.value})} placeholder="ex: 15 min"/>
                                 </div>
-                            ))}
-                            <Button variant="outline" size="sm" onClick={handleAddResourceLink}><Plus className="h-4 w-4 mr-2"/>Ajouter un lien</Button>
+                                <div className="space-y-2">
+                                    <Label htmlFor="l-order">Ordre</Label>
+                                    <Input id="l-order" type="number" value={currentLesson.order_index} onChange={e => setCurrentLesson({...currentLesson, order_index: parseInt(e.target.value, 10) || 0})} />
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch id="l-active" checked={currentLesson.is_active} onCheckedChange={checked => setCurrentLesson({...currentLesson, is_active: checked})} />
+                                <Label htmlFor="l-active">Leçon active</Label>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Texte explicatif / Procédures</Label>
+                                <TextEditor 
+                                    value={currentLesson.explanatory_text} 
+                                    onChange={val => setCurrentLesson(prev => ({...prev, explanatory_text: val}))}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Liens de ressources</Label>
+                                {(currentLesson.resources_links || []).map((link, index) => (
+                                    <div key={index} className="space-y-2 p-3 border rounded-lg">
+                                        <Input placeholder="Titre du lien" value={link.title} onChange={e => handleResourceLinkChange(index, 'title', e.target.value)} />
+                                        <Input placeholder="URL" value={link.url} onChange={e => handleResourceLinkChange(index, 'url', e.target.value)} />
+                                        <Button variant="outline" size="sm" onClick={() => handleRemoveResourceLink(index)} className="w-full">
+                                            <Trash2 className="h-4 w-4 mr-2"/>Supprimer ce lien
+                                        </Button>
+                                    </div>
+                                ))}
+                                <Button variant="outline" size="sm" onClick={handleAddResourceLink} className="w-full">
+                                    <Plus className="h-4 w-4 mr-2"/>Ajouter un lien
+                                </Button>
+                            </div>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setLessonModalOpen(false)}>Annuler</Button>
-                        <Button type="button" onClick={handleSaveLesson}>Sauvegarder la Leçon</Button>
+                        <Button type="button" variant="outline" onClick={() => setLessonModalOpen(false)} className="w-full sm:w-auto">Annuler</Button>
+                        <Button type="button" onClick={handleSaveLesson} className="w-full sm:w-auto">Sauvegarder la Leçon</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -491,15 +520,20 @@ export default function AdminContentPage() {
             <Dialog open={isDeleteModalOpen} onOpenChange={setDeleteModalOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle className="flex items-center"><AlertTriangle className="h-6 w-6 text-red-500 mr-2"/>Confirmation de suppression</DialogTitle>
+                        <DialogTitle className="flex items-center">
+                            <AlertTriangle className="h-6 w-6 text-red-500 mr-2"/>
+                            Confirmation de suppression
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                         <CardDescription>
                            Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.
                            {itemToDelete?.type === 'module' && ' Toutes les leçons de ce module seront également supprimées.'}
                         </CardDescription>
-                    </DialogHeader>
+                    </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeleteModalOpen(false)}>Annuler</Button>
-                        <Button variant="destructive" onClick={handleDelete}>Supprimer</Button>
+                        <Button variant="outline" onClick={() => setDeleteModalOpen(false)} className="w-full sm:w-auto">Annuler</Button>
+                        <Button variant="destructive" onClick={handleDelete} className="w-full sm:w-auto">Supprimer</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
