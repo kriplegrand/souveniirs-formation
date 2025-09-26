@@ -280,10 +280,10 @@ export default function ChaptersPage() {
                 <CardDescription>
                   Organisez et suivez la rédaction de votre autobiographie. Chaque chapitre correspond à une leçon du cours.
                 </CardDescription>
-                <div className="flex items-center space-x-6 text-sm pt-4">
-                  <div className="flex items-center space-x-2"><CheckCircle className="h-4 w-4 text-green-500"/><span>{completedCount} terminés</span></div>
-                  <div className="flex items-center space-x-2"><Clock className="h-4 w-4 text-blue-500"/><span>{inProgressCount} en cours</span></div>
-                  <div className="flex items-center space-x-2"><FileText className="h-4 w-4 text-gray-400"/><span>{chapters.length - completedCount - inProgressCount} non commencés</span></div>
+                <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm pt-4">
+                  <div className="flex items-center space-x-2"><CheckCircle className="h-4 w-4 text-green-500"/><span className="whitespace-nowrap">{completedCount} terminés</span></div>
+                  <div className="flex items-center space-x-2"><Clock className="h-4 w-4 text-blue-500"/><span className="whitespace-nowrap">{inProgressCount} en cours</span></div>
+                  <div className="flex items-center space-x-2"><FileText className="h-4 w-4 text-gray-400"/><span className="whitespace-nowrap">{chapters.length - completedCount - inProgressCount} non commencés</span></div>
                 </div>
               </CardHeader>
             </Card>
@@ -294,15 +294,17 @@ export default function ChaptersPage() {
                     <motion.div key={chapter.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
                     <Card className="h-full hover:shadow-lg transition-shadow duration-300">
                         <CardHeader className="pb-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-3">
-                              <div className="pt-1">{getStatusIcon(chapter.status)}</div>
-                              <div>
-                                <CardTitle className="text-lg">{chapter.title}</CardTitle>
-                                <CardDescription>{chapter.moduleTitle}</CardDescription>
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div className="flex items-start space-x-3 min-w-0 flex-1">
+                              <div className="pt-1 flex-shrink-0">{getStatusIcon(chapter.status)}</div>
+                              <div className="min-w-0 flex-1">
+                                <CardTitle className="text-lg leading-tight">{chapter.title}</CardTitle>
+                                <CardDescription className="text-sm mt-1">{chapter.moduleTitle}</CardDescription>
                               </div>
                             </div>
-                            {getStatusBadge(chapter.status)}
+                            <div className="flex-shrink-0">
+                              {getStatusBadge(chapter.status)}
+                            </div>
                           </div>
                         </CardHeader>
                         <CardContent>
@@ -321,17 +323,23 @@ export default function ChaptersPage() {
                             <div className="space-y-3">
                             {chapter.documentLink ? (
                                 <div className="p-3 bg-gray-50 rounded-lg border">
-                                <a href={chapter.documentLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between group">
-                                    <span className="text-sm text-blue-600 truncate flex-1 mr-2 group-hover:underline">{chapter.documentLink}</span>
+                                <a href={chapter.documentLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between group min-w-0">
+                                    <span className="text-sm text-blue-600 truncate flex-1 mr-2 group-hover:underline break-all">{chapter.documentLink}</span>
                                     <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 group-hover:text-blue-600" />
                                 </a>
                                 {chapter.updatedAt && <p className="text-xs text-gray-500 mt-1">Mis à jour le {new Date(chapter.updatedAt).toLocaleDateString('fr-FR')}</p>}
                                 </div>
                             ) : (<p className="text-sm text-gray-500 italic">Aucun document associé. Ajoutez un lien pour commencer.</p>)}
-                            <div className="flex space-x-2 pt-2">
-                                <Button size="sm" variant="outline" onClick={() => handleStartEditing(chapter)}><Edit3 className="h-4 w-4 mr-2" />{chapter.documentLink ? 'Modifier le lien' : 'Ajouter un lien'}</Button>
+                            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                                <Button size="sm" variant="outline" onClick={() => handleStartEditing(chapter)} className="w-full sm:w-auto">
+                                  <Edit3 className="h-4 w-4 mr-2" />
+                                  <span className="truncate">{chapter.documentLink ? 'Modifier le lien' : 'Ajouter un lien'}</span>
+                                </Button>
                                 {chapter.status !== 'completed' && (
-                                <Button size="sm" onClick={() => handleMarkAsCompleted(chapter.id)}><CheckCircle className="h-4 w-4 mr-2" />Marquer comme terminé</Button>
+                                <Button size="sm" onClick={() => handleMarkAsCompleted(chapter.id)} className="w-full sm:w-auto text-xs sm:text-sm">
+                                  <CheckCircle className="h-4 w-4 mr-1 sm:mr-2" />
+                                  <span className="truncate">Marquer comme terminé</span>
+                                </Button>
                                 )}
                             </div>
                             </div>
